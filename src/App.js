@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
 import Stream from './Stream';
 
-import { If, Else, Then } from 'react-if'
-
-
-
+import { If, Then, Else } from 'react-if'
 
 function App() {
   const [show, setShow] = useState(false)
@@ -12,9 +9,14 @@ function App() {
 
     <>
       <If condition={show}>
-        <Stream setShowHandler={setShow} />
+        <Then>
+          <Stream setShowHandler={setShow} />
+        </Then>
+        <Else>
+          <button onClick={() => { setShow(true) }}>Open Meetings</button>
+        </Else>
       </If>
-      <button  onClick={()=>{setShow(true)}}>Hello</button>
+
     </>
   );
 }

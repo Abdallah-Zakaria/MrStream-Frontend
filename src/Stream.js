@@ -1,19 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
 import io from "socket.io-client";
 import Peer from "simple-peer";
-import styled from "styled-components";
+import { If, Else, Then } from 'react-if';
 
-const Container = styled.div`
-  height: 100vh;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-`;
+import { Container, Row, Col, FormControl, Image, FormCheck, Button } from 'react-bootstrap';
+import { CameraVideo, CameraVideoOff, Mic, MicMute, DoorOpen } from 'react-bootstrap-icons';
 
-const Row = styled.div`
-  display: flex;
-  width: 100%;
-`;
+
+
+
 
 
 function Stream(props) {
@@ -25,6 +20,7 @@ function Stream(props) {
   const [callerSignal, setCallerSignal] = useState();
   const [callAccepted, setCallAccepted] = useState(false);
   const [mute, setMute] = useState(false);
+  const [videoShow, setVideoShow] = useState(true);
 
   const userVideo = useRef();
   const partnerVideo = useRef();
@@ -100,6 +96,7 @@ function Stream(props) {
       trickle: false,
       stream: stream,
     });
+
     peer.on("signal", data => {
       socket.current.emit("acceptCall", { signal: data, to: caller })
     })
@@ -118,16 +115,14 @@ function Stream(props) {
   let UserVideo;
   if (stream) {
     UserVideo = (
-      <video muted id="background_audio" playsInline ref={userVideo} autoPlay />
+      <video style={{ width: '100%' }} muted playsInline ref={userVideo} autoPlay />
     );
   }
 
   let PartnerVideo;
   if (callAccepted) {
     PartnerVideo = (
-      <video muted={mute} id="background_audio" playsInline ref={partnerVideo} autoPlay />
-
-
+      <video style={{ width: '100%' }} muted={mute} playsInline ref={partnerVideo} autoPlay />
     );
   }
 
@@ -146,33 +141,75 @@ function Stream(props) {
   }
 
   return (
-    <Container>
-      <Row>
-        {UserVideo}
-        {PartnerVideo}
+    <Container >
+      <Row style={{ display: 'flex', justifyContent: 'center' }}>
+        <Col style={{ width: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center', border: '0.5px solid blue' }} sm={6}>
+          {UserVideo}
+        </Col>
+        <Col style={{ width: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center', border: '0.5px solid blue' }} sm={6} >
+          {PartnerVideo}
+          <If condition={!callAccepted}>
+            <img style={{ width: '25%' }} src="https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png" alt="thumbnail" className="img-thumbnail" />
+          </If>
+        </Col>
       </Row>
-      <Row>
+      <Row >
         {Object.keys(users).map(key => {
           if (key === yourID) {
             return null;
           }
           return (
-            <button onClick={() => callPeer(key)}>Call {key}</button>
+            <button onClick={() => {
+              callPeer(key);
+            }}>Call {key}</button>
           );
         })}
       </Row>
-      <Row>
-        {incomingCall}
-      </Row>
-      <button onClick={() => { videoOff() }}>Video</button>
-      <button onClick={() => { setMute(mute ? false : true) }}>Mute</button>
+      <If condition={!callAccepted}>
+        <div style={{ position: 'absolute', top: '50%', left: '50%', color: 'red', transform: 'translate(-50%,-50%)' }}>
+          {incomingCall}
+        </div>
+      </If>
+      <Row style={{ display: 'flex', justifyContent: 'space-between', position:'fixed' , bottom:'0' , width : '100%', height: '10vh' , backgroundColor: 'red', alignItems:'center'}}>
+        <Col style={{ display: 'flex' , flexDirection : 'row'}}>
 
-      <button onClick={()=>{
-        socket.current.emit("leave", { userToCall: caller, from: yourID })
-        props.setShowHandler(false)
-    }} >End Call</button>
+          <Col style={{marginRight:'20px' , marginLeft : '20px'}} >
+            <If condition={mute}>
+              <Then>
+                <MicMute color='white' style={{ cursor: 'pointer', alignItems: 'center' }} size='36' onClick={() => { setMute(mute ? false : true) }} />
+              </Then>
+              <Else>
+                <Mic color='white' style={{ cursor: 'pointer' }} size='36' onClick={() => { setMute(mute ? false : true) }} />
+              </Else>
+            </If>
+          </Col>
+          <Col >
+            <If condition={videoShow}>
+              <Then>
+                <CameraVideo color='white' style={{ cursor: 'pointer' }} size='36' onClick={() => {
+                  videoOff()
+                  setVideoShow(false)
+                }} />
+              </Then>
+              <Else>
+                <CameraVideoOff color='white' style={{ cursor: 'pointer' }} size='36' onClick={() => {
+                  videoOff()
+                  setVideoShow(true)
+                }} />
+              </Else>
+            </If>
+          </Col>
+        </Col>
+        <Col style={{ marginRight : '20px'}}>
+          <DoorOpen color='white' style={{ cursor: 'pointer' }} size='36' onClick={() => {
+            socket.current.emit("leave", { userToCall: caller, from: yourID })
+            props.setShowHandler(false)
+          }} />
+        </Col>
+      </Row>
     </Container>
   );
 }
+
 
 export default Stream;
