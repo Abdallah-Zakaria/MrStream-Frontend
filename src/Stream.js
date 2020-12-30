@@ -128,8 +128,9 @@ function Stream(props) {
   function videoOff() {
     stream.getTracks().forEach(track => track.enabled = !track.enabled);
   }
-
-  callPeer();
+  if (props.initalCall) {
+    callPeer();
+  }
   return (
     <Container >
       <Row style={{ display: 'flex', justifyContent: 'center' }}>
@@ -181,6 +182,8 @@ function Stream(props) {
         </Col>
         <Col style={{ marginRight: '20px' }}>
           <DoorOpen color='white' style={{ cursor: 'pointer' }} size='36' onClick={() => {
+            stream.getAudioTracks()[0].stop();
+            stream.getVideoTracks()[0].stop();
             props.socket.emit("leaveRoom", { userToCall: caller, from: props.yourID })
             props.setShowHandler(false)
           }} />

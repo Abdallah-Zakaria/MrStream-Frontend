@@ -12,7 +12,8 @@ function Lobby(props) {
 
   const [yourID, setYourID] = useState("");
   const [users, setUsers] = useState({});
-  const [userToCall , setUserToCall] = useState('');
+  const [userToCall, setUserToCall] = useState('');
+  const [initalCall, setInitalCall] = useState(false);
   const socket = useRef();
 
   useEffect(() => {
@@ -33,16 +34,27 @@ function Lobby(props) {
     }
   }, [])
 
+  // let incomingCall;
+  // if (receivingCall) {
+  //   incomingCall = (
+  //     <div>
+  //       <h1>{caller} is calling you</h1>
+  //       <button onClick={acceptCall}>Accept</button>
+  //     </div>
+  //   )
+  // }
+
   return (
 
     <>
       <If condition={show && userToCall !== ''}>
         <Then>
-          <Stream setShowHandler={setShow} yourID={yourID} userToCall={userToCall} socket={socket.current}  />
+          <Stream setShowHandler={setShow} yourID={yourID} userToCall={userToCall} socket={socket.current} initalCall={initalCall} />
         </Then>
         <Else>
-        <h1>Meetings Room</h1>
-
+          <input type='checkbox' name='test' onClick={() => { setInitalCall(initalCall ? false : true) }} />
+          {console.log(initalCall)}
+          <h1>Meetings Room</h1>
           <button onClick={() => {
             socket.current.emit("leaveMeeting")
             props.setShowHandler(false)
@@ -60,6 +72,11 @@ function Lobby(props) {
               );
             })}
           </Row>
+          {/* <If condition={!callAccepted}>
+            <div style={{ position: 'absolute', top: '50%', left: '50%', color: 'red', transform: 'translate(-50%,-50%)' }}>
+              {incomingCall}
+            </div>
+          </If> */}
         </Else>
       </If>
 
