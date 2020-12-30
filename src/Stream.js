@@ -1,19 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
-import io from "socket.io-client";
 import Peer from "simple-peer";
 import { If, Else, Then } from 'react-if';
 
-import { Container, Row, Col, FormControl, Image, FormCheck, Button } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
 import { CameraVideo, CameraVideoOff, Mic, MicMute, DoorOpen } from 'react-bootstrap-icons';
 
 
-
-
-
-
 function Stream(props) {
-  const [yourID, setYourID] = useState("");
-  const [users, setUsers] = useState({});
+  console.log('props', props)
+
   const [stream, setStream] = useState();
   const [receivingCall, setReceivingCall] = useState(false);
   const [caller, setCaller] = useState("");
@@ -24,10 +19,9 @@ function Stream(props) {
 
   const userVideo = useRef();
   const partnerVideo = useRef();
-  const socket = useRef();
+
 
   useEffect(() => {
-    socket.current = io("http://localhost:8000/");
     navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
       setStream(stream);
       if (userVideo.current) {
@@ -35,14 +29,9 @@ function Stream(props) {
       }
     })
 
-    socket.current.on("yourID", (id) => {
-      setYourID(id);
-    })
-    socket.current.on("allUsers", (users) => {
-      setUsers(users);
-    })
 
-    socket.current.on("calling", (data) => {
+
+    props.socket.on("calling", (data) => {
       setReceivingCall(true);
       setCaller(data.from);
       setCallerSignal(data.signal);
@@ -52,13 +41,13 @@ function Stream(props) {
 
   useEffect(() => {
     return () => {
-      console.log(caller, yourID)
-      socket.current.emit("leave", { userToCall: caller, from: yourID })
+      props.socket.emit("leaveRoom", { userToCall: caller, from: props.yourID })
     }
   }, [])
 
 
-  function callPeer(id) {
+
+  function callPeer() {
     const peer = new Peer({
       initiator: true,
       trickle: false,
@@ -69,7 +58,7 @@ function Stream(props) {
     });
 
     peer.on("signal", data => {
-      socket.current.emit("callUser", { userToCall: id, signalData: data, from: yourID })
+      props.socket.emit("callUser", { userToCall: props.userToCall, signalData: data, from: props.yourID })
     })
 
     peer.on("stream", stream => {
@@ -78,12 +67,12 @@ function Stream(props) {
       }
     });
 
-    socket.current.on("callAccepted", signal => {
+    props.socket.on("callAccepted", signal => {
       setCallAccepted(true);
       peer.signal(signal);
     })
 
-    socket.current.on('endCall', () => {
+    props.socket.on('endCall', () => {
       peer.destroy();
     })
 
@@ -98,14 +87,14 @@ function Stream(props) {
     });
 
     peer.on("signal", data => {
-      socket.current.emit("acceptCall", { signal: data, to: caller })
+      props.socket.emit("acceptCall", { signal: data, to: caller })
     })
 
     peer.on("stream", stream => {
       partnerVideo.current.srcObject = stream;
     });
 
-    socket.current.on('endCall', signal => {
+    props.socket.on('endCall', signal => {
       peer.destroy();
     })
 
@@ -140,6 +129,7 @@ function Stream(props) {
     stream.getTracks().forEach(track => track.enabled = !track.enabled);
   }
 
+  callPeer();
   return (
     <Container >
       <Row style={{ display: 'flex', justifyContent: 'center' }}>
@@ -153,27 +143,16 @@ function Stream(props) {
           </If>
         </Col>
       </Row>
-      <Row >
-        {Object.keys(users).map(key => {
-          if (key === yourID) {
-            return null;
-          }
-          return (
-            <button onClick={() => {
-              callPeer(key);
-            }}>Call {key}</button>
-          );
-        })}
-      </Row>
+
       <If condition={!callAccepted}>
         <div style={{ position: 'absolute', top: '50%', left: '50%', color: 'red', transform: 'translate(-50%,-50%)' }}>
           {incomingCall}
         </div>
       </If>
-      <Row style={{ display: 'flex', justifyContent: 'space-between', position:'fixed' , bottom:'0' , width : '100%', height: '10vh' , backgroundColor: 'red', alignItems:'center'}}>
-        <Col style={{ display: 'flex' , flexDirection : 'row'}}>
+      <Row style={{ display: 'flex', justifyContent: 'space-between', position: 'fixed', bottom: '0', width: '100%', height: '10vh', backgroundColor: 'red', alignItems: 'center' }}>
+        <Col style={{ display: 'flex', flexDirection: 'row' }}>
 
-          <Col style={{marginRight:'20px' , marginLeft : '20px'}} >
+          <Col style={{ marginRight: '20px', marginLeft: '20px' }} >
             <If condition={mute}>
               <Then>
                 <MicMute color='white' style={{ cursor: 'pointer', alignItems: 'center' }} size='36' onClick={() => { setMute(mute ? false : true) }} />
@@ -200,9 +179,9 @@ function Stream(props) {
             </If>
           </Col>
         </Col>
-        <Col style={{ marginRight : '20px'}}>
+        <Col style={{ marginRight: '20px' }}>
           <DoorOpen color='white' style={{ cursor: 'pointer' }} size='36' onClick={() => {
-            socket.current.emit("leave", { userToCall: caller, from: yourID })
+            props.socket.emit("leaveRoom", { userToCall: caller, from: props.yourID })
             props.setShowHandler(false)
           }} />
         </Col>
@@ -213,3 +192,6 @@ function Stream(props) {
 
 
 export default Stream;
+
+
+
