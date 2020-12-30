@@ -1,0 +1,35 @@
+#goDiv{
+  animation: play 2s ease infinite;
+  padding: 10px;
+  background-color: rgba(65, 59, 59, 0.171);
+  color:#BABACC;
+  border-radius: 8px;
+}
+
+#goButton{
+  margin-right: 10px;
+  border: none;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: bold;
+  background-color: #BABACC;
+  cursor: pointer;
+
+}
+
+@keyframes play {
+
+  0% {
+      transform: scale(1);
+  }
+  15% {
+      box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.4);
+  }
+  25% {
+      box-shadow: 0 0 0 10px rgba(22, 22, 22, 0.4), 0 0 0 20px rgba(255, 255, 255, 0.2);
+  }
+  25% {
+      box-shadow: 0 0 0 15px rgba(255, 255, 255, 0.4), 0 0 0 30px rgba(255, 255, 255, 0.2);
+  }
+
+}
