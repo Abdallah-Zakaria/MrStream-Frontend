@@ -29,8 +29,6 @@ function Stream(props) {
       }
     })
 
-
-
     props.socket.on("calling", (data) => {
       setReceivingCall(true);
       setCaller(data.from);
@@ -132,12 +130,12 @@ function Stream(props) {
     callPeer();
   }
   return (
-    <Container >
-      <Row style={{ display: 'flex', justifyContent: 'center' }}>
-        <Col style={{ width: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center', border: '0.5px solid blue' }} sm={6}>
+    <Container style={{ position: 'relative', height: '100vh' }}>
+      <Row style={{ display: 'flex', justifyContent: 'center' , minHeight:'90vh' }}>
+        <Col style={{ width: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center' }} sm={6}>
           {UserVideo}
         </Col>
-        <Col style={{ width: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center', border: '0.5px solid blue' }} sm={6} >
+        <Col style={{ width: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center' }} sm={6} >
           {PartnerVideo}
           <If condition={!callAccepted}>
             <img style={{ width: '25%' }} src="https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png" alt="thumbnail" className="img-thumbnail" />
@@ -150,7 +148,7 @@ function Stream(props) {
           {incomingCall}
         </div>
       </If>
-      <Row style={{ display: 'flex', justifyContent: 'space-between', position: 'fixed', bottom: '0', width: '100%', height: '10vh', backgroundColor: 'red', alignItems: 'center' }}>
+      <Row style={{ display: 'flex', justifyContent: 'space-between', position: 'absolute', bottom: '0', width: '100%', height: '10vh', backgroundColor: 'red', alignItems: 'center', right: '0' }}>
         <Col style={{ display: 'flex', flexDirection: 'row' }}>
 
           <Col style={{ marginRight: '20px', marginLeft: '20px' }} >

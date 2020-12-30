@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Row } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
 
 import io from "socket.io-client";
 
@@ -34,24 +34,13 @@ function Lobby(props) {
     }
   }, [])
 
-  // let incomingCall;
-  // if (receivingCall) {
-  //   incomingCall = (
-  //     <div>
-  //       <h1>{caller} is calling you</h1>
-  //       <button onClick={acceptCall}>Accept</button>
-  //     </div>
-  //   )
-  // }
+
 
   return (
 
-    <>
-      <If condition={show && userToCall !== ''}>
-        <Then>
-          <Stream setShowHandler={setShow} yourID={yourID} userToCall={userToCall} socket={socket.current} initalCall={initalCall} />
-        </Then>
-        <Else>
+    <Container >
+      <Row style={{ display: 'flex', flexDirection: 'row' }}>
+        <Col  sm={3} style={{width:'20%'}}>
           <input type='checkbox' name='test' onClick={() => { setInitalCall(initalCall ? false : true) }} />
           {console.log(initalCall)}
           <h1>Meetings Room</h1>
@@ -72,15 +61,16 @@ function Lobby(props) {
               );
             })}
           </Row>
-          {/* <If condition={!callAccepted}>
-            <div style={{ position: 'absolute', top: '50%', left: '50%', color: 'red', transform: 'translate(-50%,-50%)' }}>
-              {incomingCall}
-            </div>
-          </If> */}
-        </Else>
-      </If>
-
-    </>
+        </Col>
+        <Col sm={9}  style={{width:'80%'}}>
+          <If condition={show && userToCall !== ''}>
+            <Then>
+              <Stream setShowHandler={setShow} yourID={yourID} userToCall={userToCall} socket={socket.current} initalCall={initalCall} />
+            </Then>
+          </If>
+        </Col>
+      </Row>
+    </Container >
   );
 }
 
