@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-
+import Calendar from 'react-calendar'
 import io from "socket.io-client";
 
 import Stream from './Stream';
 
 import { If, Then, Else } from 'react-if'
+
+import './Lobby.scss'
 
 function Lobby(props) {
   const [show, setShow] = useState(false)
@@ -40,7 +42,7 @@ function Lobby(props) {
 
     <Container >
       <Row style={{ display: 'flex', flexDirection: 'row' }}>
-        <Col  sm={3} style={{width:'20%'}}>
+        <Col sm={3} style={{ width: '20%', height: '100vh', backgroundColor: 'green' }}>
           <input type='checkbox' name='test' onClick={() => { setInitalCall(initalCall ? false : true) }} />
           {console.log(initalCall)}
           <h1>Meetings Room</h1>
@@ -62,11 +64,16 @@ function Lobby(props) {
             })}
           </Row>
         </Col>
-        <Col sm={9}  style={{width:'80%'}}>
+        <Col sm={9} style={{ width: '80%' }}>
           <If condition={show && userToCall !== ''}>
             <Then>
               <Stream setShowHandler={setShow} yourID={yourID} userToCall={userToCall} socket={socket.current} initalCall={initalCall} />
             </Then>
+            <Else>
+              <Container style={{  height: '100vh' }}>
+                <Calendar className="react-calendar" />
+              </Container >
+            </Else>
           </If>
         </Col>
       </Row>

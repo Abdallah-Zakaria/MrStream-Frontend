@@ -123,7 +123,7 @@ function Stream(props) {
         <Row style={{fontSize:'32px' }}> Interviewer request you to the meeting </Row>
         <Row style={{display:'flex' , justifyContent: 'space-between'}}>
           <Col>Press <b>GO</b> to start, <b>Jobify wish you luck</b></Col>
-          <Col><button id='goButton' style={{ marginRight : '15px' , fontSize:'16px'}} onClick={acceptCall}>GO</button></Col>
+          <Col><button id='goButton'  onClick={acceptCall}>GO</button></Col>
         </Row>
         
       </div>
