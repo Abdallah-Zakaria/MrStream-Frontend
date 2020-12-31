@@ -105,7 +105,7 @@ function Stream(props) {
   let UserVideo;
   if (stream) {
     UserVideo = (
-      <video style={{ width: '100%' ,marginTop:'5px' , marginRight : '8px' , border: '0.5px solid #0E71EB' }} muted playsInline ref={userVideo} autoPlay />
+      <video style={{ width: '100%' , border: '2px solid #232333' , borderRadius: '5px' }} muted playsInline ref={userVideo} autoPlay />
     );
   }
 
@@ -139,7 +139,7 @@ function Stream(props) {
   return (
     <Container style={{ position: 'relative', height: '100vh' }}>
       <Row style={{ display: 'flex', justifyContent: 'center' , minHeight:'90vh', backgroundColor:'black' }}>
-        <Col style={{ width: '15%', display: 'flex', justifyContent: 'center', alignItems: 'center' ,zIndex:'99' , position: 'fixed' , right:'0' , top:'0' }} sm={6}>
+        <Col style={{ width: '15%', display: 'flex', justifyContent: 'center', alignItems: 'center' ,zIndex:'99' , position: 'fixed' , right:'10px' , top:'10px' }} sm={6}>
           {UserVideo}
         </Col>
         <Col style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' , objectFit:'cover' }}  sm={6} >

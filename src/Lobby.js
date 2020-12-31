@@ -9,6 +9,14 @@ import { If, Then, Else } from 'react-if'
 
 import './Lobby.scss'
 
+
+let data = {
+  '11/29/2020': { '12:00:00 AM': 'omar', ' 5:00:00 PM': 'ali' },
+  '12/30/2020': { '12:00:00 AM': 'abdallah', ' 1:00:00 PM': 'zatar' },
+  '12/31/2020': { '12:00:00 AM': 'sara', ' 6:00:00 PM': 'rami' },
+  '1/1/2021': { '12:00:00 AM': 'sara', ' 6:00:00 PM': 'rami' }
+}
+
 function Lobby(props) {
   const [show, setShow] = useState(false)
 
@@ -16,6 +24,9 @@ function Lobby(props) {
   const [users, setUsers] = useState({});
   const [userToCall, setUserToCall] = useState('');
   const [initalCall, setInitalCall] = useState(false);
+
+  const [value, onChange] = useState(new Date());
+
   const socket = useRef();
 
   useEffect(() => {
@@ -44,7 +55,6 @@ function Lobby(props) {
       <Row style={{ display: 'flex', flexDirection: 'row' }}>
         <Col sm={3} style={{ width: '20%', height: '100vh', backgroundColor: 'green' }}>
           <input type='checkbox' name='test' onClick={() => { setInitalCall(initalCall ? false : true) }} />
-          {console.log(initalCall)}
           <h1>Meetings Room</h1>
           <button onClick={() => {
             socket.current.emit("leaveMeeting")
@@ -63,6 +73,25 @@ function Lobby(props) {
               );
             })}
           </Row>
+          <Row style={{flexDirection : 'column'}}>
+            {
+              Object.keys(data).map(date => {
+                if (date === value.toLocaleString().split(',')[0]) {
+                  return Object.keys(data[date]).map((meeting, index) => {
+                    if (meeting.split(' ')[2] === new Date().toLocaleString().split(',')[1].split(' ')[2] && meeting.split(' ')[1] > new Date().toLocaleString().split(',')[1].split(' ')[1] && (Number(date.split('/')[2]) >= Number(new Date().toLocaleString().split(',')[0].split('/')[2]) && Number(date.split('/')[0]) >= Number(new Date().toLocaleString().split(',')[0].split('/')[0]) && Number(date.split('/')[1]) >= Number(new Date().toLocaleString().split(',')[0].split('/')[1]))) {
+                      return (
+                        <Col>{meeting} , {Object.values(data[date])[index]}</Col>
+                      )
+                    } else {
+                      return (
+                        <Col style={{ color: 'red' }}>{meeting} , {Object.values(data[date])[index]}</Col>
+                      )
+                    }
+                  })
+                }
+              })
+            }
+          </Row>
         </Col>
         <Col sm={9} style={{ width: '80%' }}>
           <If condition={show && userToCall !== ''}>
@@ -70,8 +99,9 @@ function Lobby(props) {
               <Stream setShowHandler={setShow} yourID={yourID} userToCall={userToCall} socket={socket.current} initalCall={initalCall} />
             </Then>
             <Else>
-              <Container style={{  height: '100vh' }}>
-                <Calendar className="react-calendar" />
+              <Container style={{ height: '100vh' }}>
+                <Calendar className="react-calendar" onChange={onChange}
+                  value={value} />
               </Container >
             </Else>
           </If>
